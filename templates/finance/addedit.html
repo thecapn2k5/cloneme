@@ -1,0 +1,186 @@
+<script type='text/javascript'>
+function NewAccount(){
+   var name = prompt('New account name?');
+   if (name){
+      // update the database
+      $.getJSON('ajax.py', {'mode':'Finance', 'cm':'JsonAddAccount', 'name':name}, function(data){
+         // put in the new option
+         $('.accountid').append('<option value="' + data['id'] + '">' + data['name'] + '</option>');
+      });
+   }
+}
+
+<TMPL_IF boolfamilies>
+$(document).ready(function(){
+   NewRow()
+
+   $('#totalamount').change(function(){
+      CalculateRemainder();
+   });
+
+   $('.amount').live('change', function(){
+      CalculateRemainder();
+   });
+
+});
+
+function NewRow(){
+   var row = $('#cloneme').clone();
+   row.attr('id', '');
+   row.removeClass('hideme');
+   $('#allocations').append(row);
+}
+
+function CalculateRemainder(){
+   var total = $('#totalamount').val();
+   total = GetFloat(total)
+   $('#totalamount').val(AddCommas(total));
+
+   $('.amount').each(function(){
+      var one = GetFloat($(this).val());
+      total -= one
+      $(this).val(AddCommas(one));
+   });
+
+   $('.remainder').html(AddCommas(total));
+
+   if (total==0){
+      $('#savebutton').removeClass('hideme');
+      $('#savedescription').addClass('hideme');
+   } else {
+      $('#savebutton').addClass('hideme');
+      $('#savedescription').removeClass('hideme');
+   }
+
+}
+
+function GetFloat(val){
+   if (val.match(/\d/)) {
+      val = val.replace(/[^-\d.]/g, '')
+      val = parseFloat(val)
+      return val;
+   } else {
+      return 0;
+   }
+};
+
+function AddCommas(num){
+   // vars
+   num += '';
+   var parts = num.split('.');
+   var interger = parts[0];
+   var decimal = parts.length > 1 ? '.' + parts[1] : '';
+   var regex = /(\d+)(\d{3})/;
+
+   // one comma at a time
+   while (regex.test(interger)) {
+      interger = interger.replace(regex, '$1' + ',' + '$2');
+   }
+
+   // add a trailing zeros
+   if (decimal.length==0){
+      decimal = '.00';
+   }
+
+   if (decimal.length==2){
+      decimal += '0';
+   }
+
+   // concat
+   return interger + decimal;
+}
+</TMPL_IF>
+</script>
+
+<style type='text/css'>
+label {
+   font-weight: bold;
+   padding-right: 5px;
+   padding-top: 4px;
+}
+#addtransaction {
+   text-align: center;
+}
+.amount {
+   text-align: right;
+}
+</style>
+
+<div id='addtransaction'>
+   <form action='?' method='post'>
+      <input type='hidden' name='mode' value='Finance'>
+      <input type='hidden' name='cm' value='AddTransaction'>
+      <p>
+      <label>Amount</label>
+      <TMPL_IF boolfamilies>
+      <input type='text' value='0.00' id='totalamount'>
+      <TMPL_ELSE>
+      <input type='text' value='0.00' name='amount'>
+      </TMPL_IF>
+      </p>
+
+      <p>
+      <label>Description</label>
+      <input type='text' name="description">
+      </p>
+
+      <p><button type='button' onClick="NewAccount()">New Account</button></p>
+
+      <TMPL_IF boolfamilies>
+      <button type='button' class='floatr' onClick="NewRow()">New Row</button>
+      <span class='floatr' style='font-size: 22px; font-weight: bold; padding-right: 10px;'>Remainder <span class='remainder'>0.00</span></span>
+
+      <table id='allocations' class='tablesorter'>
+         <thead>
+            <th>Who Gave</th>
+            <th>Account</th>
+            <th>Amount</th>
+         </thead>
+         <tr id='cloneme' class='hideme'>
+            <td>
+               <select name='memberid'>
+                  <option value='0'>Nobody</option>
+                  <TMPL_LOOP Members>
+                  <option value="<TMPL_VAR id>">
+                     <TMPL_VAR firstname> <TMPL_VAR secondname> <TMPL_VAR lastname>
+                  </option>
+                  </TMPL_LOOP>
+               </select>
+            </td>
+            <td>
+               <select name="accountid" class='accountid'>
+                  <TMPL_LOOP Accounts>
+                  <option value="<TMPL_VAR id>"><TMPL_VAR name></option>
+                  </TMPL_LOOP>
+               </select>
+            </td>
+            <td>
+               <input type='text' class='amount' name='amount' value='0.00'>
+            </td>
+         </tr>
+      </table>
+      <button type='button' class='floatr' onClick="NewRow()">New Row</button>
+      <span class='floatr' style='font-size: 22px; font-weight: bold; padding-right: 10px;'>Remainder <span class='remainder'>0.00</span></span>
+      <br><br>
+
+
+      <br><br>
+      <span id='savedescription'><i>You can save when you have an amount and the remainder is 0.00</i></span>
+      <button type='submit' class='hideme' id='savebutton'>Save</button>
+      <TMPL_ELSE>
+      <!-- no families means all transactions are one allocation -->
+
+      <p>
+         <select name='accountid' class='accountid'>
+            <TMPL_LOOP Accounts>
+            <option value="<TMPL_VAR id>"><TMPL_VAR name></option>
+            </TMPL_LOOP>
+         </select>
+      </p>
+
+      <button type='submit' id='savebutton'>Save</button>
+
+      </TMPL_IF>
+   </form>
+</div>
+

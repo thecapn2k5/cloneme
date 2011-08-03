@@ -1,0 +1,123 @@
+#nav {
+   height: 30px;
+   padding: 5px 0px 5px 0px;
+}
+#navul {
+   top: 7px;
+   left: -15px;
+}
+#navul li {
+   padding-right: 15px;
+}
+#sidenav {
+   padding: 10px;
+}
+#footercontent {
+   padding: 5px;
+   padding-right: 10px;
+}
+
+body {
+   font-size: 14px;
+   font-family: Arial, sans-serif;
+   color: white;
+}
+
+h1, h2, h3 {
+   font-family: Arial, sans-serif;
+}
+
+a {
+   font-weight: bold;
+   text-decoration: none;
+   cursor: pointer;
+}
+
+p {
+   line-height: 17px;
+}
+
+ul {
+   list-style-type: none;
+}
+
+img {
+   border: none;
+}
+
+button {
+   background: #000 url(../images/su.inc/buttonbg.png);
+   padding: 3px;
+   font-weight:bold;
+   color: #ffffff;
+   border: 1px solid #888888;
+}
+
+button:hover, button:active {
+   background: #444 url(../images/su.inc/buttonbg_hover.png);
+}
+
+#header {
+   text-align: center;
+}
+
+#navul {
+   display:inline;
+   position: relative;
+}
+
+#navul li {
+   display:inline;
+}
+
+#sidenav {
+   margin: 0px;
+}
+
+#content {
+   min-height: 400px;
+}
+
+#quickaddsidenav {
+   position: absolute;
+   cursor: pointer;
+}
+
+#textwrap {
+   padding: 15px;
+}
+
+.hideme {
+	display: none;
+}
+
+.icon {
+   cursor: pointer;
+   position: relative;
+   top: 3px;
+   border: 0px;
+   background: none;
+}
+
+.triggeredit {
+   float:right;
+}
+
+.required:after {
+   content:"*";
+   color:#f00;
+   padding:0 0 0 3px;
+}
+
+.floatl {
+   float: left;
+}
+
+.floatr {
+   float: right;
+}
+
+.tablesorter { width: 100%;}
+.tablesorter th { cursor: pointer; padding: 2px;}
+.tablesorter td { padding: 5px;}
+.tablesorter .odd {	background: none;}

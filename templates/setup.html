@@ -1,0 +1,294 @@
+<TMPL_IF cmmain>
+<html>
+<head>
+<title>Set Up The Site</title>
+<script type="text/javascript" src="js/jquery-1.4.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+<script type='text/javascript'>
+function ValidatePassword(){
+   var pass = $('#password').val();
+   $.getJSON('setup.py', {'cm':'ValidatePassword', 'password':pass}, function(data){
+      if(data['html']){
+         $('body').html(data['html']);
+      } else {
+         alert("Wrong Password, Fool!");
+      }
+   });
+};
+</script>
+
+<style type='text/css'>
+.hideme {
+   display: none;
+}
+</style>
+</head>
+<body>
+<!-- you validated the root password -->
+<!-- picking a db name -->
+<script type='text/javascript'>
+function CheckDB(){
+   var db = $('#dbinput').val();
+   $.getJSON('setup.py', {'cm':'CheckDB', 'db':db}, function(data){
+      if(db && data['pass']){
+         if(data['pass'] == 'available'){
+            $('#db').html(db);
+            $('#results').html('is available!');
+            $('#choosedb').removeClass('hideme');
+         } else {
+            $('#db').html(db);
+            $('#results').html('is already in use.');
+            $('#choosedb').addClass('hideme');
+         }
+      } else {
+         $('#db').html(db);
+         $('#results').html('is not a created database.');
+         $('#choosedb').addClass('hideme');
+      }
+   });
+};
+
+function Choose(){
+   var db = $('#db').html();
+   $.getJSON('setup.py', {'cm':'ChooseDB', 'db':db}, function(data){
+
+      if(data['html']){
+         $('body').html(data['html']);
+      } else {
+         alert('There was an error');
+      }
+
+   });
+};
+
+</script>
+<h3>Put in the database name.</h3>
+<input onKeyup="CheckDB()" id='dbinput'><br>
+<span id='db'></span>
+<span id='results'></span><br>
+<button type='button' id='choosedb' class='hideme' onClick="Choose()">Confirm</button>
+</body>
+
+<TMPL_ELSE>
+<!-- pages that aren't the main one -->
+
+<TMPL_IF cmchoosedb>
+<!-- you've chosen the database.  now you need to choose options -->
+<script type='text/javascript'>
+function SaveToggles(){
+   var toggles = ''
+   $('input[type=checkbox]').each(function(){
+      var name = $(this).attr('name');
+      var checked = $(this).attr('checked');
+      toggles = toggles + name +'='+ checked + '/'
+   });
+
+   $.getJSON('setup.py', {'cm':'ChooseToggles', 'db':$('#confirmeddb').val(), 'toggles':toggles}, function(data){
+      if(data['html']){
+         $('body').html(data['html']);
+      } else {
+         alert('There was an error');
+      }
+   });
+};
+</script>
+
+<h3>Which Customization Options Do You Want?</h3>
+<input type='hidden' id='confirmeddb' value="<TMPL_VAR db>">
+<span class='hideme'>
+<br><input type='checkbox' name='editnav' checked='checked'>
+Modify Main Navigation Pages
+<br><input type='checkbox' name='editsecondarynav' checked='checked'>
+Modify Secondary Navigation Pages
+</span>
+<br><input type='checkbox' name='layout'>
+Modify Layout Template
+<br><input type='checkbox' name='secondarynav'>
+Modify Secondary Navigation Placement
+<br><input type='checkbox' name='color'>
+Modify Color Scheme
+<br><input type='checkbox' name='customcss'>
+Customized CSS
+<br><input type='checkbox' name='customtemplates'>
+Custom Templates
+<br><input type='checkbox' name='families'>
+Family Database
+<br><input type='checkbox' name='attendance'>
+Services &amp; Attendance Tracker
+<i>(only if also using "Family Database")</i>
+<br><input type='checkbox' name='finance'>
+Finance Tracker
+
+
+<br><button type='button' onClick="SaveToggles()">Save</button>
+</TMPL_IF>
+
+<TMPL_IF cmchoosetoggles>
+<script type='text/javascript'>
+$(document).ready(function(){
+   $('input[name=secondarynav]').change(function(){
+      $('#secondarynav').addClass('hideme');
+      $('#layout').removeClass('hideme');
+   });
+   $('input[name=layout]').change(function(){
+      $('#layout').addClass('hideme');
+      $('#colorscheme').removeClass('hideme');
+   });
+   $('input[name=color]').change(function(){
+      $('#colorscheme').addClass('hideme');
+
+      $('#confirmation').append("<span><b>Site Title: </b>");
+      $('#confirmation').append($('#titleinput').val());
+      $('#confirmation').append("<br></span>");
+
+      $('input').each(function(){
+         if ($(this).attr('checked')){
+         var div = $(this).parent().clone();
+         $('#confirmation').append(div);
+         }
+      });
+      $('#confirmation').removeClass('hideme');
+   });
+});
+
+function ConfirmTitle(){
+   $('#title').addClass('hideme');
+   $('#secondarynav').removeClass('hideme');
+}
+
+function DenyChoice(){
+   $('#confirmation div').remove();
+   $('#confirmation span').remove();
+   $('#confirmation').addClass('hideme');
+   $('input[type=radio]').attr('checked', '');
+   $('#titleinput').val('');
+   $('#title').removeClass('hideme');
+}
+
+function ConfirmChoice(){
+
+   var secondarynav = $('#confirmation input[name=secondarynav]').val()
+   var layout = $('#confirmation input[name=layout]').val()
+   var color = $('#confirmation input[name=color]').val()
+
+   $.getJSON('setup.py', {'cm':'ChooseOptions', 'db':"<TMPL_VAR db>", 'toggles':"<TMPL_VAR toggles>", 'secondarynav':secondarynav, 'layout':layout, 'color':color, 'title':$('#titleinput').val()}, function(data){
+      if(data['html']){
+         $('body').html(data['html']);
+      } else {
+         alert('There was an error');
+      }
+   });
+}
+</script>
+<style type='text/css'>
+.option {
+   float: left;
+   text-align: center;
+   border: 2px solid black;
+   margin: 3px;
+   padding: 3px;
+}}
+#confirmation div {border: none; color: #FFFFFF;}
+#confirmation input {display: none;}
+</style>
+
+<div id='title'>
+<h3>Put in the title for your site</h3>
+<input type='text' id='titleinput'>
+<button onClick="ConfirmTitle()">Confirm</button>
+</div>
+
+<div id='confirmation' class='hideme'>
+<h3 style="color: #000000">
+Are these the options you meant to choose?
+<button onClick="ConfirmChoice()">Yes</button>
+<button onClick="DenyChoice()">No</button>
+</h3>
+</div>
+
+<div id='secondarynav' class='hideme'>
+<h3>Pick Your Secondary Nav Placement</h3>
+   <div class='option'>
+      <img src='images/setup/bubbles.left.png'><br>
+      Left <input type='radio' name='secondarynav' value='left'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/bubbles.right.png'><br>
+      Right <input type='radio' name='secondarynav' value='right'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/bubbles.top.png'><br>
+      Top <input type='radio' name='secondarynav' value='top'>
+   </div>
+</div>
+
+<div id='layout' class='hideme'>
+<h3>Pick Your Main Layout</h3>
+   <div class='option'>
+      <img src='images/setup/bubbles.left.png'><br>
+      Bubbles <input type='radio' name='layout' value='bubbles'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/bubble.png'><br>
+      Bubble <input type='radio' name='layout' value='bubble'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/squares.left.png'><br>
+      Squares <input type='radio' name='layout' value='squares'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/square.png'><br>
+      Square <input type='radio' name='layout' value='square'>
+   </div>
+</div>
+
+<div id='colorscheme' class='hideme'>
+<h3>Pick Your Color Scheme</h3>
+   <div class='option'>
+      <img src='images/setup/birthday_party_divided.png'><br>
+      Birthday Party Divided <input type='radio' name='color' value='birthday_party_divided'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/birthday_party_unified.png'><br>
+      Birthday Party Unified <input type='radio' name='color' value='birthday_party_unified'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/burnt_divided.png'><br>
+      Burnt Divided <input type='radio' name='color' value='burnt_divided'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/burnt_unified.png'><br>
+      Burnt Unified <input type='radio' name='color' value='burnt_unified'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/grayscale_divided.png'><br>
+      Grayscale Divided <input type='radio' name='color' value='grayscale_divided'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/grayscale_unified.png'><br>
+      Grayscale Unified <input type='radio' name='color' value='grayscale_unified'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/oasis_divided.png'><br>
+      Oasis Divided <input type='radio' name='color' value='oasis_divided'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/oasis_unified.png'><br>
+      Oasis Unified <input type='radio' name='color' value='oasis_unified'>
+   </div>
+   <div class='option'>
+      <img src='images/setup/south_africa_divided.png'><br>
+      South Africa Divided <input type='radio' name='color' value='south_africa_divided'>
+   </div>
+</div>
+
+</TMPL_IF>
+
+<TMPL_IF cmchooseoptions>
+<!-- ready to hose setup files -->
+<h3>Setup Complete!</h3>
+<a href='?mode=CompleteSetup'>Click</a> to complete setup.
+</TMPL_IF>
+
+</TMPL_IF>
+</html>

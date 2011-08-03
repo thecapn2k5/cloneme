@@ -1,0 +1,27 @@
+* {
+   color: #000000;
+}
+
+#sidenavdiv {
+   float: left;
+}
+
+.hideme {
+   display: none;
+}
+
+#quickaddsidenav {
+   cursor: pointer;
+   position: absolute;
+   top: 40px;
+}
+
+.icon {
+   position: relative;
+   top: 3px;
+   cursor: pointer;
+}
+
+.triggeredit {
+   float: right;
+}

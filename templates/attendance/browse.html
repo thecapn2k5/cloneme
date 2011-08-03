@@ -1,0 +1,147 @@
+<TMPL_IF validated>
+<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="js/jquery.tablesorter.pager.js"></script>
+<script type='text/javascript'>
+$(document).ready(function() {
+   TriggerTables()
+
+   $('.datepicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+      changeMonth: true,
+      changeYear: true
+   });
+});
+
+function DeleteService(id){
+   if(confirm('Are you sure you want to delete this service and all the records associated with it?')){
+      $.getJSON('ajax.py', {'mode':'Attendance', 'cm':'AjaxDeleteService', 'id':id}, function(data){
+         $('#service'+id).remove();
+         TriggerTables()
+      });
+   };
+};
+
+function TriggerTables(){
+   $('#tablesorter1').tablesorter({
+      sortList: [[0,0]],
+      widgets: ['zebra'] })
+      .tablesorterPager({container: $('#pager1'), size:'10'});
+};
+
+function ToggleAdd(){
+   if($('#addservice').hasClass('hideme')){
+      $('#addservice').removeClass('hideme');
+   } else {
+      $('#addservice').addClass('hideme');
+   }
+}
+
+</script>
+
+<style type='text/css'>
+label {
+   font-weight: bold;
+   padding-right: 5px;
+   padding-top: 4px;
+}
+
+#addservice {
+   text-align: center;
+}
+
+</style>
+
+<div id='addservice' class='hideme'>
+   <form action='?' method='post'>
+      <input type='hidden' name='mode' value='Attendance'>
+      <input type='hidden' name='cm' value='AddService'>
+      <label>Service Name</label>
+      <input type='text' name='name'>
+      <br><br>
+
+      <label>Date And Time</label>
+      <input type='text' name='date' class='datepicker'>
+
+      <select name='hour'>
+         <option value='01'>01</option>
+         <option value='02'>02</option>
+         <option value='03'>03</option>
+         <option value='04'>04</option>
+         <option value='05'>05</option>
+         <option value='06'>06</option>
+         <option value='07'>07</option>
+         <option value='08'>08</option>
+         <option value='09'>09</option>
+         <option value='10'>10</option>
+         <option value='11'>11</option>
+         <option value='12'>12</option>
+      </select>
+
+      <select name='minute'>
+         <option value='00'>00</option>
+         <option value='15'>15</option>
+         <option value='30'>30</option>
+         <option value='45'>45</option>
+      </select>
+
+      <select name='ampm'>
+         <option value='am'>am</option>
+         <option value='pm'>pm</option>
+      </select>
+
+      <br><br>
+
+      <button type='submit'>Save</button>
+   </form>
+</div>
+
+<h2>Services
+<button onClick="ToggleAdd()">Add</button>
+</h2>
+
+<TMPL_IF Services>
+<div id='pager1' class='pager center'>
+   <form>
+   <img src="images/icons/pager/first.png" class="first"/>
+   <img src="images/icons/pager/prev.png" class="prev"/>
+   <input type="text" class="pagedisplay" size='5' style="text-align: center; border: 0 none; background-color: white;"/>
+   <img src="images/icons/pager/next.png" class="next"/>
+   <img src="images/icons/pager/last.png" class="last"/>
+   <select class="pagesize">
+   <option selected="selected" value="10">10</option>
+   <option value="20">20</option>
+   <option value="30">30</option>
+   <option value="40">40</option>
+   <option value="50">50</option>
+   </select>
+   </form>
+</div>
+
+<table id='tablesorter1' class='tablesorter'>
+   <thead>
+      <th><nobr>Service Name<img class='icon' src='images/icons/sort.png' /></nobr></th>
+      <th><nobr>Time<img class='icon' src='images/icons/sort.png' /></nobr></th>
+      <th style='width: 50px;'>Delete</th>
+   </thead>
+   <tbody>
+
+   <tr class='hideme'><td>&nbsp;</td></tr>
+
+   <TMPL_LOOP Services>
+   <tr id='service<TMPL_VAR id>'>
+      <td><a href="?mode=Attendance&cm=Edit&id=<TMPL_VAR id>" style='text-decoration: underline;'><TMPL_VAR name></a></td>
+      <td><TMPL_VAR timestamp></td>
+      <td style='text-align: center;'><img class='icon' src='images/icons/cross.png' onClick='DeleteService("<TMPL_VAR id>")'></td>
+   </tr>
+   </TMPL_LOOP>
+   </tbody>
+</table>
+
+<TMPL_ELSE>
+<i>You don't have any services.  Please click the button to add one.</i>
+</TMPL_IF>
+
+<TMPL_ELSE>
+<i>You don't have permission to view this page.</i>
+</TMPL_IF>
+

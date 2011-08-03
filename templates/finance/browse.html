@@ -1,0 +1,302 @@
+<TMPL_IF validated>
+<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+<script type='text/javascript'>
+$(document).ready(function() {
+   TriggerTables()
+   CalculateTotals()
+});
+
+function DeleteService(id){
+   if(confirm('Are you sure you want to delete this service and all the records associated with it?')){
+      $.getJSON('ajax.py', {'mode':'Attendance', 'cm':'AjaxDeleteService', 'id':id}, function(data){
+         $('#service'+id).remove();
+         TriggerTables()
+      });
+   };
+};
+
+function TriggerTables(){
+   <TMPL_IF boolfamilies>
+   $('.transactions').tablesorter({
+      sortList: [[1,0]],
+      widgets: ['zebra'] })
+   $('.allocations').tablesorter({
+      sortList: [[2,0]],
+      widgets: ['zebra'] })
+   <TMPL_ELSE>
+   $('.transactions').tablesorter({
+      sortList: [[2,0]],
+      widgets: ['zebra'] })
+   </TMPL_IF>
+};
+
+function Filter(){
+   // vars
+   var account = $('#filteraccount').val()
+   var amount = $('#filteramount').val()
+   <TMPL_IF boolfamilies>
+   var member = $('#filtermember').val()
+
+   if (!(account=='0') || !(member=='all')){
+      $('table.allocations').removeClass('hideme');
+      $('table.allocations').attr('id', 'tablesorter1');
+      $('table.transactions').addClass('hideme');
+      $('table.transactions').attr('id', 'tablesorter2');
+   } else {
+      $('table.transactions').removeClass('hideme');
+      $('table.transactions').attr('id', 'tablesorter1');
+      $('table.allocations').addClass('hideme');
+      $('table.allocations').attr('id', 'tablesorter2');
+   }
+   $('#tablesorter2 tr').addClass('hideme');
+   </TMPL_IF>
+
+   // all amounts
+   if (amount=='all'){
+      $('#tablesorter1 tr').removeClass('hideme');
+   // income only
+   } else if (amount=='income') {
+      $('#tablesorter1 tr.income').removeClass('hideme');
+      $('#tablesorter1 tr.expense').addClass('hideme');
+   // expenses only
+   } else if (amount=='expense') {
+      $('#tablesorter1 tr.expense').removeClass('hideme');
+      $('#tablesorter1 tr.income').addClass('hideme');
+   }
+
+   // you only want one account
+   if (!(account=='0')){
+      $('#tablesorter1 tr').each(function(){
+         if (!($(this).hasClass(account))){
+            $(this).addClass('hideme');
+         }
+      });
+   }
+
+   <TMPL_IF boolfamilies>
+   if (!(member=='all')){
+      $('#tablesorter1 tr').each(function(){
+         if (!($(this).hasClass(member))){
+            $(this).addClass('hideme');
+         }
+      });
+   }
+   </TMPL_IF>
+
+   CalculateTotals()
+   TriggerTables()
+}
+
+function CalculateTotals(){
+   // vars
+   var income = 0
+   var expense = 0
+
+   // get income float
+   $('.incomecell').each(function(){
+      if (!($(this).parent().hasClass('hideme'))){
+         income += GetFloat($(this).html())
+      }
+   });
+
+   // get expense float
+   $('.expensecell').each(function(){
+      if (!($(this).parent().hasClass('hideme'))){
+         expense += GetFloat($(this).html())
+      }
+   });
+
+   // total
+   total = income - expense
+
+   // get the strings
+   total = AddCommas(total);
+   income = AddCommas(income);
+   expense = '-' + AddCommas(expense);
+
+   // fill the cells
+   $('.totalcell').html(total);
+   $('.incomesubtotalcell').html(income);
+   $('.expensesubtotalcell').html(expense);
+
+}
+
+function GetFloat(val){
+   if (val.match(/\d/)) {
+      val = val.replace(/[^\d.]/g, '')
+      val = parseFloat(val)
+      return val;
+   } else {
+      return 0;
+   }
+};
+
+function AddCommas(num){
+   // vars
+   num += '';
+   var parts = num.split('.');
+   var interger = parts[0];
+   var regex = /(\d+)(\d{3})/;
+   var decimal = parts.length > 1 ? '.' + parts[1] : '';
+
+   // making sure there are only two decimal places
+   if (decimal.length>3){
+      if (parseInt(decimal[3])>=5){
+         decimal = parseInt(decimal.slice(1,3))+1
+         if (decimal==100){
+            interger = String(parseInt(interger)+1)
+            decimal = '00'
+         }
+         decimal = '.'+String(decimal)
+      } else {
+         decimal = decimal.slice(0,3)
+      }
+   }
+
+   // add a trailing zeros
+   if (decimal.length==0){
+      decimal = '.00';
+   }
+
+   if (decimal.length==2){
+      decimal += '0';
+   }
+
+   // one comma at a time
+   while (regex.test(interger)) {
+      interger = interger.replace(regex, '$1' + ',' + '$2');
+   }
+
+   // concat
+   return interger + decimal;
+}
+
+</script>
+
+<h2>Transactions
+<button onClick="navigate('?mode=Finance&cm=Add')">Add</button>
+</h2>
+
+<TMPL_IF Transactions>
+<div style='float: left;'>
+<h3>Filter Selection <a onClick="$('#filterexplanation').toggleClass('hideme');">(?)</a></h3>
+<select onChange="Filter()" id='filteramount'>
+   <option value="all">All Amounts</option>
+   <option value="income">Income</option>
+   <option value="expense">Expense</option>
+</select>
+
+<select onChange="Filter()" id='filteraccount'>
+   <option value="0">All Accounts</option>
+   <TMPL_LOOP Accounts>
+   <option value="account<TMPL_VAR id>"><TMPL_VAR name></option>
+   </TMPL_LOOP>
+</select>
+
+<TMPL_IF boolfamilies>
+<select onChange="Filter()" id='filtermember'>
+   <option value="all">All Members</option>
+   <TMPL_LOOP Members>
+   <option value="member<TMPL_VAR id>"><TMPL_VAR firstname> <TMPL_VAR secondname> <TMPL_VAR lastname></option>
+   </TMPL_LOOP>
+</select>
+</TMPL_IF>
+
+<p id='filterexplanation' class='hideme'>
+These dropdowns choose which rows you see.  When you choose an amount (income or expense) you're looking at a complete "transaction."  When you choose an account or a member, you're looking at what's called an "allocation."  This is simply a piece of the whole transaction that was designated to that account or person.
+</p>
+
+</div>
+
+<table style='width:100%; text-align: right;'>
+   <thead>
+      <th>Subtotals </th>
+      <th style='width: 120px;' class='incomesubtotalcell'></th>
+      <th style='width: 120px;' class='expensesubtotalcell'></th>
+   </thead>
+   <thead>
+      <th>Total </th>
+      <th style='text-align: center;' colspan='2' class='totalcell'></th>
+   </thead>
+</table>
+
+<table id='tablesorter1' class='transactions tablesorter'>
+   <thead>
+      <th>Description <img class='icon' src='images/icons/sort.png'></th>
+      <TMPL_UNLESS boolfamilies>
+      <th>Account <img class='icon' src='images/icons/sort.png'></th>
+      </TMPL_UNLESS>
+      <th>Added <img class='icon' src='images/icons/sort.png'></th>
+      <th style='width: 120px;'>Income <img class='icon' src='images/icons/sort.png'></th>
+      <th style='width: 120px;'>Expense <img class='icon' src='images/icons/sort.png'></th>
+   </thead>
+   <tbody>
+
+   <TMPL_LOOP Transactions>
+   <tr class="<TMPL_VAR type> account<TMPL_VAR accountid>">
+      <TMPL_IF boolfamilies>
+      <td><a href="?mode=Finance&cm=Read&id=<TMPL_VAR id>"><TMPL_VAR description></a></td>
+      <TMPL_ELSE>
+      <td><TMPL_VAR description></td>
+      <td><TMPL_VAR accountname></td>
+      </TMPL_IF>
+      <td><TMPL_VAR timestamp></td>
+      <td style='text-align: right' class='incomecell'>
+         <TMPL_IF income><TMPL_VAR amount><TMPL_ELSE>&nbsp;</TMPL_IF>
+      </td>
+      <td style='text-align: right' class='expensecell'>
+         <TMPL_IF expense><TMPL_VAR amount><TMPL_ELSE>&nbsp;</TMPL_IF>
+      </td>
+   </tr>
+   </TMPL_LOOP>
+   </tbody>
+</table>
+
+<TMPL_IF boolfamilies>
+<table id='tablesorter2' class='allocations tablesorter hideme'>
+   <thead>
+      <th>Account <img class='icon' src='images/icons/sort.png'></th>
+      <th>Person <img class='icon' src='images/icons/sort.png'></th>
+      <th>Added <img class='icon' src='images/icons/sort.png'></th>
+      <th style='width: 120px;'>Income <img class='icon' src='images/icons/sort.png'></th>
+      <th style='width: 120px;'>Expense <img class='icon' src='images/icons/sort.png'></th>
+   </thead>
+   <tbody>
+
+   <TMPL_LOOP Allocations>
+   <tr class="<TMPL_VAR type> account<TMPL_VAR accountid> member<TMPL_VAR memberid> hideme">
+      <td><TMPL_VAR accountname></td>
+      <td><TMPL_VAR firstname> <TMPL_VAR secondname> <TMPL_VAR lastname></td>
+      <td><TMPL_VAR timestamp></td>
+      <td style='text-align: right' class='incomecell'>
+         <TMPL_IF income><TMPL_VAR amount><TMPL_ELSE>&nbsp;</TMPL_IF>
+      </td>
+      <td style='text-align: right' class='expensecell'>
+         <TMPL_IF expense><TMPL_VAR amount><TMPL_ELSE>&nbsp;</TMPL_IF>
+      </td>
+   </tr>
+   </TMPL_LOOP>
+   </tbody>
+</table>
+</TMPL_IF>
+
+<table style='width:100%; text-align: right;'>
+   <thead>
+      <th>Subtotals </th>
+      <th style='width: 120px;' class='incomesubtotalcell'></th>
+      <th style='width: 120px;' class='expensesubtotalcell'></th>
+   </thead>
+   <thead>
+      <th>Total </th>
+      <th style='text-align: center;' colspan='2' class='totalcell'></th>
+   </thead>
+</table>
+
+<TMPL_ELSE>
+<i>You don't have any transactions.  Please click the button to add one.</i>
+</TMPL_IF>
+
+<TMPL_ELSE>
+<i>You don't have permission to view this page.</i>
+</TMPL_IF>
+

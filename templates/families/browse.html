@@ -1,0 +1,74 @@
+<TMPL_IF validated>
+<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="js/jquery.tablesorter.pager.js"></script>
+<script type='text/javascript'>
+$(document).ready(function() {
+   TriggerTables()
+});
+
+function DeleteFamily(id){
+   if(confirm('Are you sure you want to delete this family and all the members associated with it?')){
+      $.getJSON('ajax.py', {'mode':'Families', 'cm':'AjaxDeleteFamily', 'id':id}, function(data){
+         $('#family'+id).remove();
+         TriggerTables()
+      });
+   };
+};
+
+function TriggerTables(){
+   $('#tablesorter1').tablesorter({
+      sortList: [[0,0]],
+      widgets: ['zebra'] })
+      .tablesorterPager({container: $('#pager1'), size:'10'});
+};
+
+</script>
+
+<h2>Families
+<button onClick="navigate('?mode=Families&cm=Add')">Add</button>
+</h2>
+
+<TMPL_IF Families>
+<div id='pager1' class='pager center'>
+   <form>
+   <img src="images/icons/pager/first.png" class="first"/>
+   <img src="images/icons/pager/prev.png" class="prev"/>
+   <input type="text" class="pagedisplay" size='5' style="text-align: center; border: 0 none; background-color: white;"/>
+   <img src="images/icons/pager/next.png" class="next"/>
+   <img src="images/icons/pager/last.png" class="last"/>
+   <select class="pagesize">
+   <option selected="selected" value="10">10</option>
+   <option value="20">20</option>
+   <option value="30">30</option>
+   <option value="40">40</option>
+   <option value="50">50</option>
+   </select>
+   </form>
+</div>
+
+<table id='tablesorter1' class='tablesorter'>
+   <thead>
+      <th><nobr>Family Name<img class='icon' src='images/icons/sort.png' /></nobr></th>
+      <th style='width: 50px;'>Delete</th>
+   </thead>
+   <tbody>
+
+   <tr class='hideme'><td>&nbsp;</td></tr>
+
+   <TMPL_LOOP Families>
+   <tr id='family<TMPL_VAR id>'>
+      <td><a href="?mode=Families&cm=Read&id=<TMPL_VAR id>" style='text-decoration: underline;'><TMPL_VAR familyname></a></td>
+      <td style='text-align: center;'><img class='icon' src='images/icons/cross.png' onClick='DeleteFamily("<TMPL_VAR id>")'></td>
+   </tr>
+   </TMPL_LOOP>
+   </tbody>
+</table>
+
+<TMPL_ELSE>
+<i>You don't have any families.  Please click the button to add one.</i>
+</TMPL_IF>
+
+<TMPL_ELSE>
+<i>You don't have permission to view this page.</i>
+</TMPL_IF>
+

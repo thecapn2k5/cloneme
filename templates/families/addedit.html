@@ -1,0 +1,270 @@
+<TMPL_IF validated>
+<script type='text/javascript'>
+$(document).ready(function() {
+   <TMPL_IF familyid>
+   PopulateFamily()
+   <TMPL_ELSE>
+   NewMember()
+   $('.member .delete').addClass('hideme');
+   </TMPL_IF>
+
+   datePicker()
+});
+
+function datePicker(){
+   $('.datepicker').live('focus', function(){
+      $(this).datepicker({dateFormat: 'yy-mm-dd',
+      changeMonth: true,
+         changeYear: true});
+      });
+}
+
+function PopulateFamily(){
+   <TMPL_LOOP Members>
+   NewMember()
+   <TMPL_IF __FIRST__>
+   // can't delete the first person
+   $('.member .delete').addClass('hideme');
+   </TMPL_IF>
+
+   // make sure you target the right thing
+   var id = '#member'+$('#iterator').val();
+
+
+   // populate the new person
+   $(id + ' [name=memberid]').val(<TMPL_VAR id>);
+   $(id + ' [name=firstname]').val("<TMPL_VAR firstname>");
+   $(id + ' [name=secondname]').val("<TMPL_VAR secondname>");
+   $(id + ' [name=lastname]').val("<TMPL_VAR lastname>");
+   $(id + ' [name=relationship]').val("<TMPL_VAR relationship>");
+   $(id + ' [name=birthday]').val("<TMPL_IF birthday><TMPL_VAR birthday></TMPL_IF>");
+
+   <TMPL_IF Phones>
+   // selectors
+   var button = id + ' #addphone'
+   var phone = id + ' #clonephonedone [name=phonenumber]'
+   var type = id + ' #clonephonedone [name=phonetype]'
+   var phoneid = id + ' #clonephonedone [name=phoneid]'
+   <TMPL_LOOP Phones>
+   // fill the form
+   $(button).trigger('click');
+   $(phone).last().val("<TMPL_VAR phone>")
+   $(phoneid).last().val("<TMPL_VAR id>")
+   $(type).last().val("<TMPL_VAR description>")
+   </TMPL_LOOP>
+   </TMPL_IF>
+
+   <TMPL_IF Emails>
+   // selectors
+   var button = id + ' #addemail'
+   var email = id + ' #cloneemaildone [name=email]'
+   var type = id + ' #cloneemaildone [name=emailtype]'
+   var emailid = id + ' #cloneemaildone [name=emailid]'
+   <TMPL_LOOP Emails>
+   // fill the form
+   $(button).trigger('click');
+   $(email).last().val("<TMPL_VAR email>")
+   $(emailid).last().val("<TMPL_VAR id>")
+   $(type).last().val("<TMPL_VAR description>")
+   </TMPL_LOOP>
+   </TMPL_IF>
+
+   </TMPL_LOOP>
+
+   // clean up
+   $('#clonemember input').val('');
+   $('#clonemember [name=memberid]').val(0);
+}
+
+function AddOne(button, id){
+   span = $('#' + id).clone();
+   span.removeClass('hideme');
+   span.attr('id', span.attr('id')+'done');
+   button.parent().append(span);
+}
+
+function NewMember(){
+   $('#iterator').val(parseInt($('#iterator').val())+1);
+   span = $('#clonemember').clone();
+   span.removeClass('hideme');
+   span.addClass('member');
+   span.attr('id', 'member'+$('#iterator').val());
+   $('#members').append(span);
+}
+
+function DeleteElement(span){
+   span.parent().remove();
+}
+
+function PreCheck(){
+   $('#errorspan').html('');
+   // make sure they put in at least a family name
+   if (!($('input[name=familyname]').val())){
+      $('#errorspan').html('Family Name cannot be left blank.');
+      return false;
+   }
+
+   // make sure everything has some value
+   $('.noblank').each(function(){
+      if (!($(this).val())){
+         $(this).val(' ')
+      }
+   });
+
+   // counting phones and emails per member
+   var phones = ''
+   var emails = ''
+   // go through each member
+   $('.member').each(function(){
+      // catch the id
+      var id = $(this).attr('id');
+
+      // every phone for the member
+      var count = 0
+      $('#'+id+' #clonephonedone').each(function(){
+         count = count + 1
+      });
+
+      // append
+      phones = phones + String(count) + ','
+
+      // every email for the member
+      var count = 0
+      $('#'+id+' #cloneemaildone').each(function(){
+         count = count + 1
+      });
+      // append
+      emails = emails + String(count) + ','
+   });
+   $('#phones').val(phones);
+   $('#emails').val(emails);
+
+   return true;
+}
+
+</script>
+
+<style type='text/css'>
+label {
+   float: left;
+   position: relative;
+   top: 4px;
+   width: 120px;
+   padding-right: 5px;
+   font-weight: bold;
+   text-align: right;
+}
+
+hr {
+   width: 350px;
+}
+
+.delete {
+   font-weight: bold;
+   cursor: pointer;
+}
+
+</style>
+
+
+<form action='?' method='post' onSubmit='return PreCheck()'>
+<input type='hidden' name='mode' value='Families'>
+<TMPL_IF id>
+<input type='hidden' name='cm' value='Update'>
+<input type='hidden' name='familyid' value="<TMPL_VAR id>">
+<TMPL_ELSE>
+<input type='hidden' name='cm' value='Create'>
+</TMPL_IF>
+<input type='hidden' id='iterator' value="<TMPL_IF iterator><TMPL_VAR iterator><TMPL_ELSE>0</TMPL_IF>">
+<input type='hidden' id='phones' name='phones' value=''>
+<input type='hidden' id='emails' name='emails' value=''>
+
+<h2>Family Info</h2>
+
+<label class='required'>Family Name</label>
+<input type='text' class='required' name='familyname' value="<TMPL_VAR familyname>"><br>
+
+<label>Home Address</label>
+<input type='text' name='address' value="<TMPL_VAR address>"><br>
+
+<label>Anniversary</label>
+<input type='text' name='anniversary' class='datepicker' value="<TMPL_VAR anniversary>"><br>
+
+<br>
+<hr>
+
+<h2>Members
+<button type='button' onClick="NewMember()">Add Member</button>
+</h2>
+
+<span id='members'></span>
+
+<span id='clonemember' class='hideme'>
+   <span class='delete' onClick="DeleteElement($(this))">
+      Delete Family Member
+      <img src='images/icons/cross.png' class='icon'><br>
+   </span>
+
+   <input type='hidden' name='memberid' value='0'>
+
+   <label>First Name</label>
+   <input type='text' name='firstname' class='noblank'><br>
+
+   <label>Second Name</label>
+   <input type='text' name='secondname' class='noblank'><br>
+
+   <label>Surname</label>
+   <input type='text' name='lastname' class='noblank'><br>
+
+   <label>Part of Family
+   <a onClick="alert('Father, Mother, Son, Daughter, etc.')">(?)</a>
+   </label>
+   <input type='text' name='relationship' class='noblank'><br>
+
+   <label>Birthday</label>
+   <input type='text' name='birthday' class='noblank datepicker'><br>
+
+   <span class='phonesappend'>
+      <button id='addphone' type="button" onClick='AddOne($(this), "clonephone")'>Add Phone</button><br>
+   </span>
+
+   <span class='emailsappend'>
+      <button id='addemail' type="button" onClick='AddOne($(this), "cloneemail")'>Add Email</button><br>
+   </span>
+<br>
+<hr>
+</span>
+
+<span id='clonephone' class='hideme'>
+   <span class='delete' onClick="DeleteElement($(this))">
+      Delete Phone Number
+      <img src='images/icons/cross.png' class='icon'><br>
+   </span>
+   <input type='hidden' name='phoneid' value='0'>
+   <label>Phone Number</label>
+   <input type='text' name='phonenumber' class='noblank phonenumber'><br>
+
+   <label>Phone Type</label>
+   <input type='text' name='phonetype' class='noblank'><br>
+</span>
+
+<span id='cloneemail' class='hideme'>
+   <span class='delete' onClick="DeleteElement($(this))">
+      Delete Email Address
+      <img src='images/icons/cross.png' class='icon'><br>
+   </span>
+   <input type='hidden' name='emailid' value='0'>
+   <label>Email Address</label>
+   <input type='text' name='email' class='noblank'><br>
+
+   <label>Email Type</label>
+   <input type='text' name='emailtype' class='noblank'><br>
+</span>
+
+<span id="errorspan" style='font-weight: bold;'></span><br>
+<button type='submit'>Save</button>
+</form>
+
+<TMPL_ELSE>
+<i>You don't have permission to view this page</i>
+</TMPL_IF>

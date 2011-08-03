@@ -1,0 +1,48 @@
+<script type='text/javascript'>
+function Validate(){
+   var pass1 = $('#pass1').val();
+   var pass2 = $('#pass2').val();
+   if(pass1 || pass2){
+      if(pass1 && pass2){
+         if(pass1 == pass2){
+            $('#form').submit();
+         } else {
+            Print("Your passwords do not match.");
+         }
+      } else {
+         Print("Please repeat your new password.");
+      }
+   } else {
+      $('#form').submit();
+   }
+}
+
+function Print(text){
+   $('#passworderror').html(text + "<br>");
+}
+
+</script>
+
+<h1>User Details</h1>
+
+<form action='?' method='post' id='form'>
+<input type='hidden' name='mode' value='Users'>
+<input type='hidden' name='cm' value='Update'>
+<input type='hidden' name='id' value="<TMPL_VAR id>">
+
+<b>Username:&nbsp;</b>
+<input type='text' name='username' value="<TMPL_VAR username>">
+<br>
+
+<span id='passworderror' style='color: red;'></span>
+
+<b>Change Password:&nbsp;</b>
+<input type='password' name='password' id='pass1'>
+<br>
+
+<b>Repeat Password:&nbsp;</b>
+<input type='password' id='pass2'>
+<br>
+
+</form>
+<button type='button' onClick="Validate()">Save</button>

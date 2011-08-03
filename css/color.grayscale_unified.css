@@ -1,0 +1,27 @@
+/* FONT COLORS */
+#outside, #header, #quickaddsidenav {
+   color: #ffffff;
+}
+a {
+   color: #ffffff;
+}
+body {
+   color: #ffffff;
+}
+
+
+
+/* CURRENT PAGES & HOVERS */
+.current, .currentpage, #navul li a:hover, #sidenav li a:hover {
+   text-decoration: underline;
+}
+
+/* BACKGROUND COLORS */
+body {
+   background: #888888;
+}
+#nav, #sidenavdiv, #content, #footer {
+   background: #464646;
+   border: 2px solid #ffffff;
+}
+.tablesorter .even {	background-color: #353535;}

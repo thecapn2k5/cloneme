@@ -1,0 +1,14 @@
+#nav {
+   margin-top: 5px;
+}
+#maincontent, #footer {
+   margin-top: 18px;
+}
+#sidenavdiv {
+   width: 186px;
+   margin-right: 6px;
+}
+#quickaddsidenav {
+   top: 47px;
+}
+

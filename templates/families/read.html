@@ -1,0 +1,28 @@
+<h2><TMPL_VAR familyname>&nbsp;
+<button onClick='navigate("?mode=Families&cm=Edit&id=<TMPL_VAR id>")'>Edit</button>
+</h2>
+
+<b>Anniversary:</b><TMPL_VAR anniversary><br>
+
+<h3>Family Members</h3>
+<TMPL_LOOP Members>
+<p>
+<b><TMPL_VAR firstname> <TMPL_VAR secondname> <TMPL_VAR lastname></b>
+<TMPL_IF birthday> - <i><TMPL_VAR birthday></i></TMPL_IF>
+<TMPL_IF relationship> (<TMPL_VAR relationship>)</TMPL_IF>
+<TMPL_IF Phones>
+   <br><u>Phones:</u><br>
+   <TMPL_LOOP Phones>
+   <TMPL_VAR phone> (<TMPL_VAR description>)<br>
+   </TMPL_LOOP>
+</TMPL_IF>
+
+<TMPL_IF Emails>
+   <TMPL_UNLESS Phones><br></TMPL_UNLESS>
+   <u>Emails:</u><br>
+   <TMPL_LOOP Emails>
+   <TMPL_VAR email> (<TMPL_VAR description>)<br>
+   </TMPL_LOOP>
+</TMPL_IF>
+</p>
+</TMPL_LOOP>

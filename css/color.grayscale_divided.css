@@ -1,0 +1,38 @@
+/* FONT COLORS */
+#outside, #header, #quickaddsidenav {
+   color: #ffffff;
+}
+a {
+   color: #ffffff;
+}
+body {
+   color: #000000;
+}
+
+/* BORDERS */
+#nav, #content, #footer, #sidenavdiv {
+   border: 2px solid #ffffff;
+}
+
+/* CURRENT PAGES & HOVERS */
+.current, .currentpage, #navul li a:hover, #sidenav li a:hover {
+   text-decoration: underline;
+}
+
+/* BACKGROUND COLORS */
+body {
+   background: #888888;
+}
+#nav {
+   background: #464646;
+}
+#sidenavdiv {
+   background: #000000;
+}
+#content {
+   background: #aaaaaa;
+}
+#footer {
+   background: #464646;
+}
+.tablesorter .even {	background-color: #353535;}

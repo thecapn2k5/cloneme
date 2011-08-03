@@ -1,0 +1,102 @@
+<TMPL_IF validated>
+<script type='text/javascript' src='js/ajaxupload.js'></script>
+<script type='text/javascript' src='js/tiny_mce/tiny_mce.js'></script>
+<script type='text/javascript'>
+
+$(document).ready(function(){
+   var thumb = $('#thumb');
+   var url = document.location.toString();
+   url = url.slice(0, url.lastIndexOf("/")+1)
+   new AjaxUpload('imageUpload', {
+      action: "QuickUpload.py",
+      name: 'image',
+      onSubmit: function(file, extension) {
+         $('#preview').removeClass('hideme');
+         thumb.attr('src', 'images/ajax_loader.gif');
+      },
+      onComplete: function(file, response) {
+         $('#response').html(url + response)
+         thumb.load(function(){
+            $('div.preview').removeClass('loading');
+            thumb.unbind();
+         });
+         thumb.attr('src', response);
+         setTimeout(function(){resizeSideNav()}, 50);
+      }
+   });
+
+});
+
+function setup() {
+
+   $('#tinymce').html('<textarea name="content">'+$('#tinymce').html()+'</textarea>');
+   $('.triggeredit').addClass('hideme');
+   $('#uploader').removeClass('hideme');
+
+   var mywidth = $('#tinymce').width();
+
+   tinyMCE.init({
+      height: "600px",
+      width: mywidth,
+      mode : "textareas",
+      theme : "advanced",
+      plugins : "safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+      theme_advanced_buttons1 : "save,newdocument,bold,italic,underline,strikethrough,justifyleft,justifycenter,justifyright,justifyfull,|,styleselect,formatselect,fontselect,fontsizeselect",
+      theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,forecolor,backcolor",
+      theme_advanced_buttons3 : "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,ltr,rtl",
+      theme_advanced_buttons4 : "insertlayer,moveforward,movebackward,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak",
+      theme_advanced_toolbar_location : "top",
+      theme_advanced_toolbar_align : "left",
+      theme_advanced_statusbar_location : "bottom"
+   });
+
+   setTimeout(function(){resizeSideNav()}, 100);
+}
+
+function ShowExplanation(){
+   alert("The text editor we used doesn't give you a way to upload pictures from your computer.  To get a picture onto this page, you first have to upload it.  Click 'Browse' and select the picture you want.  It will upload, then you will see a link and a preview of the picture you uploaded.  Copy the link and click on 'Insert/edit image' on the text editor.  In the box next to 'Image URL' paste the link you just copied.");
+};
+
+</script>
+
+<style type='text/css'>
+#ajaxupload, #preview {
+   padding-top: 15px;
+}
+
+#uploader {
+   position: relative;
+   top: 15px;
+   padding-bottom: 15px;
+}
+
+#explanation {
+   text-decoration: underline;
+   cursor: pointer;
+   font-weight: bold;
+}
+
+</style>
+
+<div id='uploader' class='hideme'>
+   <div id="preview" class="hideme">
+      <img id="thumb" height="100px">
+      <p id="response"></p>
+   </div>
+   <form id="ajaxupload" style='display: inline;'>
+      Upload a picture to include.
+      <input id="imageUpload" type="file" size='14'>
+   </form>
+   <span id="explanation" onClick="ShowExplanation()">What's This?</span>
+</div>
+
+<button class='triggeredit' onClick="setup()">Edit</button>
+<form action='?' method='post'>
+   <input type='hidden' name='mode' value="Home">
+   <input type='hidden' name='cm' value='SaveStatic'>
+   <input type='hidden' name='id' value="<TMPL_VAR id>">
+</TMPL_IF>
+   <div id='tinymce'><TMPL_VAR content ESCAPE="NONE"></div>
+<TMPL_IF validated>
+</form>
+</TMPL_IF>

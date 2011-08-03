@@ -1,0 +1,76 @@
+<TMPL_IF validated>
+<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="js/jquery.tablesorter.pager.js"></script>
+<script type='text/javascript'>
+$(document).ready(function() {
+   TriggerTables()
+});
+
+function TriggerTables(){
+   $('#tablesorter1').tablesorter({
+      sortList: [[0,0]],
+      widgets: ['zebra'] })
+      .tablesorterPager({container: $('#pager1'), size:'10'});
+};
+
+function TogglePresent(checkbox, id){
+   if (checkbox.attr('checked')){
+      var checked = 1
+   } else {
+      var checked = 0
+   }
+   $.getJSON('ajax.py', {'mode':'Attendance', 'cm':'AjaxTogglePresent', 'serviceid':"<TMPL_VAR id>", 'memberid':id, 'present':checked}, function(data){
+   });
+}
+</script>
+
+<h2>Services</h2>
+
+<i>This page saves automatically when you check/uncheck the present box.  To return to the previous page, merely click the "Attendance" link again.</i>
+
+<TMPL_IF Members>
+<div id='pager1' class='pager center'>
+   <form>
+   <img src="images/icons/pager/first.png" class="first"/>
+   <img src="images/icons/pager/prev.png" class="prev"/>
+   <input type="text" class="pagedisplay" size='5' style="text-align: center; border: 0 none; background-color: white;"/>
+   <img src="images/icons/pager/next.png" class="next"/>
+   <img src="images/icons/pager/last.png" class="last"/>
+   <select class="pagesize">
+   <option selected="selected" value="10">10</option>
+   <option value="20">20</option>
+   <option value="30">30</option>
+   <option value="40">40</option>
+   <option value="50">50</option>
+   </select>
+   </form>
+</div>
+
+<table id='tablesorter1' class='tablesorter'>
+   <thead>
+      <th><nobr>Name<img class='icon' src='images/icons/sort.png' /></nobr></th>
+      <th><nobr>Present<img class='icon' src='images/icons/sort.png' /></nobr></th>
+   </thead>
+   <tbody>
+
+   <tr class='hideme'><td>&nbsp;</td></tr>
+
+   <TMPL_LOOP Members>
+   <tr>
+      <td><TMPL_VAR firstname> <TMPL_VAR secondname> <TMPL_VAR lastname></td>
+      <td style='text-align: center;'>
+         <input onChange="TogglePresent($(this), '<TMPL_VAR id>')" type='checkbox' <TMPL_VAR checked>>
+      </td>
+   </tr>
+   </TMPL_LOOP>
+   </tbody>
+</table>
+
+<TMPL_ELSE>
+<i>You don't have any members.  Please add some before coming here.</i>
+</TMPL_IF>
+
+<TMPL_ELSE>
+<i>You don't have permission to view this page.</i>
+</TMPL_IF>
+

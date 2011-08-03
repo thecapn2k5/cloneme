@@ -1,0 +1,12 @@
+<h2>Login to site</h2>
+
+<TMPL_IF error><p style='color: red;'><TMPL_VAR error></p></TMPL_IF>
+
+<form method='post' action='?'>
+   <p class='login'>
+      <input type='hidden' name='cm' value='logmein' />
+      <label>Username</label> <input type='text' name='username'/><br/><br/>
+      <label>Password</label> <input type='password' name='password'/><br/>
+      <button type='submit'>Login</button>
+   </p>
+</form>

@@ -1,0 +1,38 @@
+<form action='?' method='post'>
+<input type='hidden' name='mode' value='Configuration'>
+<input type='hidden' name='cm' value='Save'>
+
+<div class=''>
+<h2>Title</h2>
+<input type='text' name='title' value="<TMPL_VAR configtitle>">
+</div>
+
+<div class=''>
+<TMPL_IF customcss>
+<h2>Custom CSS</h2>
+<textarea name='customcss' rows='15' cols='50'><TMPL_VAR customcss></textarea>
+</TMPL_IF>
+</div>
+
+<TMPL_LOOP Options>
+
+<TMPL_IF List>
+<div class=''>
+<h2><TMPL_VAR name></h2>
+
+<TMPL_IF customtemplates>
+<p style='font-weight: bold'>If you select anything other than "None" all of your css and other template and color scheme changes will be overridden by this template.</p>
+</TMPL_IF>
+
+<TMPL_LOOP List>
+   <input type='radio' name="<TMPL_VAR category>" value="<TMPL_VAR original>" <TMPL_VAR selected>>
+   <TMPL_VAR name><br>
+</TMPL_LOOP>
+</div>
+</TMPL_IF>
+</TMPL_LOOP>
+
+<div class=''>
+<button type='submit'>Save</button>
+</div>
+</form>

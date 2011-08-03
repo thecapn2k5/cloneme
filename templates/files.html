@@ -1,0 +1,35 @@
+<script type='text/javascript'>
+$(document).ready(function(){
+   $('.thumb').click(function(){
+      var url = document.location.toString();
+      url = url.slice(0, url.lastIndexOf("/")+1)
+      url = url + $(this).attr('src');
+      alert(url);
+   });
+});
+</script>
+
+<style type='text/css'>
+.imgtile {
+   min-height: 250px;
+   position: relative;
+   float: left;
+   margin: 3px;
+}
+
+.thumb {
+   width: 170px;
+}
+</style>
+
+<h1>Uploaded Files</h1>
+
+<p>This page shows all the files that were uploaded to this site.  It is intended for use when editing the content of a page.  If you don't know which picture you want, but you know you've uploaded it, look here.  Click on the picture and you'll recieve a popup with the link to the image.  Copy that link and paste it into the page editor's "Insert/edit image" popup and you'll have your image.</p>
+
+<TMPL_LOOP Files>
+
+   <div class='imgtile'>
+      <img class='thumb' src="uploads/<TMPL_VAR filename>">
+   </div>
+
+</TMPL_LOOP>

@@ -1,0 +1,201 @@
+<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="js/jquery.tablesorter.pager.js"></script>
+<script type='text/javascript' src='js/tiny_mce/tiny_mce.js'></script>
+<script type='text/javascript'>
+$(document).ready(function() {
+   TriggerTables()
+});
+
+function TriggerTables(){
+   $('#tablesorter1').tablesorter({
+      sortList: [[0,0]],
+      widgets: ['zebra'] })
+      .tablesorterPager({container: $('#pager1'), size:'10'});
+
+   $('#tablesorter2').tablesorter({
+      sortList: [[0,0]],
+      widgets: ['zebra'] })
+      .tablesorterPager({container: $('#pager2'), size:'10'});
+};
+
+function DeactivateUser(id){
+   if(confirm("Are you sure you want to deactivate this user?")){
+      $.getJSON('ajax.py', {'mode':'Users', 'cm':'JSONToggleActive', 'id':id, 'active':0}, function(id){
+         var row = $('#user'+id).html();
+         $('#user'+id).remove();
+         $('#tablesorter2').append('<tr id="user' + id + '">' + row + '</tr>');
+         $('#deactivate'+id).addClass('hideme');
+         $('#activate'+id).removeClass('hideme');
+         TriggerTables()
+      });
+   }
+};
+
+
+function ActivateUser(id){
+   if(confirm("Are you sure you want to reactivate this user?")){
+      $.getJSON('ajax.py', {'mode':'Users', 'cm':'JSONToggleActive', 'id':id, 'active':1}, function(id){
+         var row = $('#user'+id).html();
+         $('#user'+id).remove();
+         $('#tablesorter1').append('<tr id="user' + id + '">' + row + '</tr>');
+         $('#activate'+id).addClass('hideme');
+         $('#deactivate'+id).removeClass('hideme');
+         TriggerTables()
+      });
+   }
+};
+
+function Validate(){
+   var pass1 = $('#pass1').val();
+   var pass2 = $('#pass2').val();
+   var username = $('#username').val();
+   if(pass1 || pass2){
+      if(pass1 && pass2){
+         if(pass1 == pass2){
+            if(username){
+               $.getJSON('ajax.py', {'mode':'Users', 'cm':'JSONValidateUsername', 'username':username}, function(data){
+                  if(data){
+                     Print("Username must be unique.  There is another user using this one.")
+                  } else {
+                     $('#form').submit();
+                  }
+               });
+            } else {
+               Print("Username is a mandatory field.")
+            }
+         } else {
+            Print("Your passwords do not match.");
+         }
+      } else {
+         Print("Please repeat your new password.");
+      }
+   } else {
+      Print("Please put in a password");
+   }
+}
+
+function Print(text){
+   $('#passworderror').html(text + "<br>");
+}
+
+</script>
+
+<style type='text/css'>
+#newuser {
+   width: 100%;
+   text-align: center;
+}
+</style>
+
+<TMPL_IF validated>
+
+<div id='newuser' class='hideme'>
+<h1>User Details</h1>
+
+<form action='?' method='post' id='form'>
+<input type='hidden' name='mode' value='Users'>
+<input type='hidden' name='cm' value='ProcessRegistration'>
+
+<span id='passworderror' style='color: red;'></span>
+
+<b>Username:&nbsp;</b>
+<input type='text' name='username' id='username'>
+<br>
+
+<b>Password:&nbsp;</b>
+<input type='password' name='password' id='pass1'>
+<br>
+
+<b>Repeat Password:&nbsp;</b>
+<input type='password' id='pass2'>
+<br>
+
+</form>
+<button type='button' onClick="Validate()">Save</button>
+</div>
+
+<h2>Active Users
+<button type='button' onClick="$('#newuser').removeClass('hideme');">Add User</button>
+</h2>
+
+<div id='pager1' class='pager center'>
+   <form>
+   <img src="images/icons/pager/first.png" class="first"/>
+   <img src="images/icons/pager/prev.png" class="prev"/>
+   <input type="text" class="pagedisplay" size='5' style="text-align: center; border: 0 none; background-color: white;"/>
+   <img src="images/icons/pager/next.png" class="next"/>
+   <img src="images/icons/pager/last.png" class="last"/>
+   <select class="pagesize">
+   <option selected="selected" value="10">10</option>
+   <option value="20">20</option>
+   <option value="30">30</option>
+   <option value="40">40</option>
+   <option value="50">50</option>
+   </select>
+   </form>
+</div>
+
+<table id='tablesorter1' class='tablesorter'>
+   <thead>
+      <th><nobr>Username<img class='icon' src='images/icons/sort.png' /></nobr></th>
+      <th>Deactivate</th>
+   </thead>
+   <tbody>
+
+   <tr class='hideme'><td>&nbsp;</td></tr>
+
+   <TMPL_LOOP Users>
+   <tr id='user<TMPL_VAR id>'>
+      <td><a href="?mode=Users&cm=Edit&id=<TMPL_VAR id>" style='text-decoration: underline;'><TMPL_VAR username></a></td>
+      <td>
+         <a id="deactivate<TMPL_VAR id>" onClick='DeactivateUser("<TMPL_VAR id>")'><img src="images/icons/cross.png"></a>
+         <a id="activate<TMPL_VAR id>" class="hideme" onClick='ActivateUser("<TMPL_VAR id>")'><img src="images/icons/accept.png"></a>
+      </td>
+   </tr>
+   </TMPL_LOOP>
+   </tbody>
+</table>
+
+<h2>Deactivated Users</h2>
+
+<div id='pager2' class='pager center'>
+   <form>
+   <img src="images/icons/pager/first.png" class="first"/>
+   <img src="images/icons/pager/prev.png" class="prev"/>
+   <input type="text" class="pagedisplay" size='5' style="text-align: center; border: 0 none; background-color: white;"/>
+   <img src="images/icons/pager/next.png" class="next"/>
+   <img src="images/icons/pager/last.png" class="last"/>
+   <select class="pagesize">
+   <option selected="selected" value="10">10</option>
+   <option value="20">20</option>
+   <option value="30">30</option>
+   <option value="40">40</option>
+   <option value="50">50</option>
+   </select>
+   </form>
+</div>
+
+<table id='tablesorter2' class='tablesorter'>
+   <thead>
+      <th><nobr>Username<img class='icon' src='images/icons/sort.png' /></nobr></th>
+      <th>Reactivate</th>
+   </thead>
+   <tbody>
+
+   <tr class='hideme'><td>&nbsp;</td></tr>
+
+   <TMPL_LOOP Deleted>
+   <tr id='user<TMPL_VAR id>'>
+      <td><a href="?mode=Users&cm=Edit&id=<TMPL_VAR id>" style='text-decoration: underline;'><TMPL_VAR username></a></td>
+      <td>
+         <a id="deactivate<TMPL_VAR id>" class='hideme' onClick='DeactivateUser("<TMPL_VAR id>")'><img src="images/icons/cross.png"></a>
+         <a id="activate<TMPL_VAR id>" onClick='ActivateUser("<TMPL_VAR id>")'><img src="images/icons/accept.png"></a>
+      </td>
+   </tr>
+   </TMPL_LOOP>
+   </tbody>
+</table>
+
+<TMPL_ELSE>
+<i>You don't have permission to view this page.</i>
+</TMPL_IF>

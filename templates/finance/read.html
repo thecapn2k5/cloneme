@@ -1,0 +1,26 @@
+<style type='text/css'>
+#textwrap {
+   text-align: center;
+}
+</style>
+
+<h2>Amount: <TMPL_VAR amount></h2>
+
+<TMPL_IF description>
+<h2>Description: <TMPL_VAR description></h2>
+</TMPL_IF>
+
+<table class='tablesorter'>
+   <thead>
+      <th>Person</th>
+      <th>Account</th>
+      <th>Amount</th>
+   </thead>
+   <TMPL_LOOP Allocations>
+   <tr>
+      <td><TMPL_VAR firstname> <TMPL_VAR secondname> <TMPL_VAR lastname></td>
+      <td><TMPL_VAR accountname></td>
+      <td><TMPL_VAR amount></td>
+   </tr>
+   </TMPL_LOOP>
+</table>

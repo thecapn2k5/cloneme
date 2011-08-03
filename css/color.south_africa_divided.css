@@ -1,0 +1,29 @@
+#outside, #header, #quickaddsidenav {
+   color: #000000;            /* black      */
+}
+a, body {
+   color: #ffffff;            /* white      */
+}
+#nav, #content, #footer, #sidenavdiv {
+   border: 2px solid #000000; /* black      */
+}
+.current, .currentpage, #navul li a:hover, #sidenav li a:hover {
+   text-decoration: underline;
+}
+body {
+   background: #ffffff;       /* white      */
+}
+#nav {
+   background: #b51d1a;       /* dark green */
+}
+#sidenavdiv {
+   background: #000000;       /* black      */
+   border: 2px solid #fcb300; /* yellow     */
+}
+#content {
+   background: #074931;       /* dark green */
+}
+#footer {
+   background: #112164;       /* blue       */
+}
+.tablesorter .even {	background-color: #353535;}

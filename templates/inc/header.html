@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   <title><TMPL_VAR configtitle></title>
+
+   <link href='css/jquery-ui-1.7.2.custom.css' rel='stylesheet' type='text/css'/>
+
+   <!-- Style -->
+   <link href="css/blueprint.css" rel="stylesheet" type="text/css"/>
+   <link href="css/style.css" rel="stylesheet" type="text/css" title="normal" />
+   <TMPL_IF chosencustom>
+   <link href="css/custom.<TMPL_VAR chosencustom>.css" rel="stylesheet" type="text/css" title="normal" />
+   <TMPL_ELSE>
+   <link href="css/color.<TMPL_VAR configcolor>.css" rel="stylesheet" type="text/css" title="normal" />
+   <link href="css/layout.<TMPL_VAR configlayout>.css" rel="stylesheet" type="text/css" title="normal" />
+   </TMPL_IF>
+   <!--/Style -->
+
+   <!-- Javascript -->
+   <script type="text/javascript" src="js/jquery-1.4.min.js"></script>
+   <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+   <TMPL_IF validated>
+   <script type="text/javascript" src="js/dbsite.js"></script>
+   </TMPL_IF>
+   <!--/Javascript -->
+
+<script type="text/javascript">
+function navigate(url){
+   window.location.href = url
+};
+
+function resizeSideNav(){
+   <TMPL_IF configsecondarynavtop>
+   $('#content').removeClass('span-19');
+   $('#content').addClass('span-24');
+   <TMPL_ELSE>
+   $('#sidenav').css('height', getInt($('#content').css('height'))-20);
+   </TMPL_IF>
+}
+
+function getInt(size){
+   return parseInt(size.slice(0,-2));
+}
+
+$(document).ready(function(){
+
+   // see whether you should show or hide the sidenav
+   <TMPL_IF hidesidenav>
+      $('#content').css('width', $('#nav').css('width'));
+      $('#sidenavdiv').addClass('hideme');
+      <TMPL_IF validated>
+      // admins can add new pages even if the nav isn't there
+      $('#quickaddsidenav').removeClass('hideme');
+      </TMPL_IF>
+   <TMPL_ELSE>
+      // size the sidenav properly
+      resizeSideNav()
+   </TMPL_IF>
+});
+
+<TMPL_IF validated>
+function Ifparent(){
+   <TMPL_IF parent>
+   return 1
+   <TMPL_ELSE>
+   return 0
+   </TMPL_IF>
+}
+function Varparent(){return "<TMPL_VAR parent>"}
+function Ifstaticid(){
+   <TMPL_IF staticid>
+   return 1
+   <TMPL_ELSE>
+   return 0
+   </TMPL_IF>
+}
+function Varstaticid(){return "<TMPL_VAR staticid>"}
+</TMPL_IF>
+
+</script>
+
+<TMPL_UNLESS chosencustom>
+<style type='text/css'>
+<TMPL_IF configsecondarynavtop>
+#sidenav {
+   padding-left: 25px;
+}
+#sidenav li {
+   display: inline;
+   padding-right: 15px;
+}
+#sidenav li .floatr {
+   float: none;
+}
+<TMPL_IF configdivided>
+#sidenavdiv {
+   width: 960px;
+   margin-right: 0px;
+   margin-bottom: 10px;
+}
+</TMPL_IF>
+</TMPL_IF>
+
+#sidenavdiv {
+<TMPL_IF configunified>
+width: 200px;
+</TMPL_IF>
+<TMPL_IF configsecondarynavleft>
+float: left;
+</TMPL_IF>
+<TMPL_IF configsecondarynavright>
+float: right;
+</TMPL_IF>
+}
+
+<TMPL_IF configunified>
+#nav, #sidenavdiv, #content {
+   border-bottom: none;
+}
+#content, #sidenavdiv, #footer {
+   border-top: none;
+}
+   <TMPL_IF configsecondarynavleft>
+   #maincontent {
+      width: 964px;
+   }
+   #content {
+      <TMPL_UNLESS hidesidenav>
+      border-left: none;
+      </TMPL_UNLESS>
+   }
+   #sidenavdiv {
+      border-right: none;
+   }
+   </TMPL_IF>
+   <TMPL_IF configsecondarynavright>
+   #maincontent {
+      width: 963px;
+   }
+   #content {
+      <TMPL_UNLESS hidesidenav>
+      border-right: none;
+      </TMPL_UNLESS>
+   }
+   #sidenavdiv {
+      border-left: none;
+      position: relative;
+      right: 1px;
+   }
+   </TMPL_IF>
+   <TMPL_IF configsecondarynavtop>
+   #sidenavdiv {
+      width: 960px;
+   }
+   </TMPL_IF>
+</TMPL_IF>
+
+/* custom css */
+<TMPL_VAR configcustomcss>
+
+</style>
+</TMPL_UNLESS>
+
+</head>
+<body>
+
+<div id='container' class='container'>
+<!-- Header -->
+<div id='header' class='span-24'>
+<TMPL_IF demosite>
+<h3>You are currently running in Demo mode.  There are a few differences between demo mode and normal mode.  First, everyone shares pages.  Everyone who is running in demo mode shares the same page names and content, so your changes can be overwritten at any time. Everyone also shares files.  Don't upload anything you don't want open to the public.</h3>
+<i>Please feel free to <a href='?mode=Configuration'>change your configuration</a>.  That is the main purpose of Demo mode</i>
+</TMPL_IF>
+</div>
+
+<!-- Navigation -->
+<div id='nav' class='span-24 rounded'>
+   <ul id='navul'>
+      <TMPL_LOOP Topnav>
+      <li>
+         <a class="<TMPL_VAR currentparent>" href='?cm=Top&id=<TMPL_VAR id>'><TMPL_VAR name></a>
+         <TMPL_IF validated GLOBAL="1">
+         <TMPL_IF booleditnav GLOBAL="1">
+         <img class='icon' src='images/icons/page_white_edit.png' onClick='EditTopNav("<TMPL_VAR id>", "<TMPL_VAR name>")'>
+         <img class='icon' src='images/icons/page_white_delete.png' onClick='DeleteTopNav("<TMPL_VAR id>")'>
+         </TMPL_IF>
+         </TMPL_IF>
+      </li>
+      </TMPL_LOOP>
+      <TMPL_IF validated>
+      <TMPL_IF booleditnav GLOBAL="1">
+      <li><img src="images/icons/add.png" class="icon" onClick="AddTopNav()"><a onClick="AddTopNav()">Add</a></li>
+      </TMPL_IF>
+      <li><a class="<TMPL_VAR admincurrent>" href='?mode=Users&cm=Browse'>Admin</a></li>
+      </TMPL_IF>
+   </ul>
+</div>
+
+<TMPL_IF validated>
+<TMPL_IF booleditsecondarynav GLOBAL="1">
+<div id='quickaddsidenav' class='hideme' onClick="AddSideNav()">
+<img src='images/icons/page_white_add.png' class='icon'> <b>Add A New Page</b>
+</div>
+</TMPL_IF>
+</TMPL_IF>
+
+<div id='maincontent' class='span-24'>
+<div id='sidenavdiv' class='rounded'>
+
+<ul id='sidenav'>
+   <TMPL_LOOP Sidenav>
+   <li>
+      <a href="?id=<TMPL_VAR id>" class="<TMPL_VAR currentpage>"><TMPL_VAR name></a>
+      <TMPL_IF validated GLOBAL="1">
+      <TMPL_IF booleditsecondarynav GLOBAL="1">
+      <img class='floatr icon' src='images/icons/page_white_delete.png' onClick='DeleteSideNav("<TMPL_VAR id>")'>
+      <img class='floatr icon' src='images/icons/page_white_edit.png' onClick='EditSideNav("<TMPL_VAR id>", "<TMPL_VAR name>")'>
+      </TMPL_IF>
+      </TMPL_IF>
+   </li>
+   </TMPL_LOOP>
+   <TMPL_IF validated>
+   <TMPL_IF admincurrent GLOBAL="1">
+      <li><a class="<TMPL_VAR currentpageusersbrowse>" href='?mode=Users&cm=Browse'>Users</a></li>
+      <li><a class="<TMPL_VAR currentpageconfiguration>" href='?mode=Configuration'>Configuration</a></li>
+      <li><a class="<TMPL_VAR currentpagefiles>" href='?mode=Files'>Files</a></li>
+
+
+      <TMPL_IF boolfamilies>
+      <li><a class="<TMPL_VAR currentpagefamilies>" href='?mode=Families'>Families</a></li>
+      </TMPL_IF>
+      <TMPL_IF boolattendance>
+      <li><a class="<TMPL_VAR currentpageattendance>" href='?mode=Attendance'>Attendance</a></li>
+      </TMPL_IF>
+      <TMPL_IF boolfinance>
+      <li><a class="<TMPL_VAR currentpagefinance>" href='?mode=Finance'>Finance</a></li>
+      </TMPL_IF>
+
+
+
+   </TMPL_IF>
+   <TMPL_IF booleditsecondarynav GLOBAL="1">
+   <li onClick="AddSideNav()">
+      <img src='images/icons/page_white_add.png' class='icon'>
+      <a>Add A New Page</a>
+   </li>
+   </TMPL_IF>
+   </TMPL_IF>
+</ul>
+
+</div> <!-- /sidenav div -->
+
+<div id='content' class='span-19 rounded'>
+<div id='textwrap'>

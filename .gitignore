@@ -3,3 +3,6 @@
 config.ini
 index.py
 ajax.py
+setup.py
+bin/syncdb.py
+lib/Kengine.py
