@@ -1,3 +1,4 @@
 *.pyc
 *.htmlc
 config.ini
+index.py
