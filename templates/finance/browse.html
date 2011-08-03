@@ -234,7 +234,7 @@ These dropdowns choose which rows you see.  When you choose an amount (income or
 
    <TMPL_LOOP Transactions>
    <tr class="<TMPL_VAR type> account<TMPL_VAR accountid>">
-      <TMPL_IF boolfamilies>
+      <TMPL_IF boolfamilies GLOBAL="1">
       <td><a href="?mode=Finance&cm=Read&id=<TMPL_VAR id>"><TMPL_VAR description></a></td>
       <TMPL_ELSE>
       <td><TMPL_VAR description></td>
