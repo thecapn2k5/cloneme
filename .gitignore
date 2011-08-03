@@ -2,3 +2,4 @@
 *.htmlc
 config.ini
 index.py
+ajax.py
