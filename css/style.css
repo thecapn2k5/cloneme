@@ -57,10 +57,6 @@ button:hover, button:active {
    background: #444 url(../images/su.inc/buttonbg_hover.png);
 }
 
-#header {
-   text-align: center;
-}
-
 #navul {
    display:inline;
    position: relative;
