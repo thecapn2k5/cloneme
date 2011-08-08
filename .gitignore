@@ -3,6 +3,5 @@
 *.swp
 config.ini
 devconfig.ini
-index.py
-ajax.py
 setup.py
+demo/demo_config.ini
