@@ -1,9 +1,8 @@
 *.pyc
 *.htmlc
+*.swp
 config.ini
+devconfig.ini
 index.py
 ajax.py
 setup.py
-bin/syncdb.py
-lib/Kengine.py
-Model/DBreadModel.py
