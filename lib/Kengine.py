@@ -86,12 +86,13 @@ class Webapp(CGI_Application):
       elif 'devconfig.ini' in files:
          self.config.read('devconfig.ini')
 
+      elif self.cookie('demomode') and self.config.get('general', 'demomode') == 'on':
+         self.config.read('demo/%s_config.ini' % self.cookie('demomode'))
+
       else:
          print 'content-type: text/html \n'
          print 'You haven\'t set up the database yet. <hr>'
 
-      if self.cookie('demomode') and self.config.get('general', 'demomode') == 'on':
-         self.config.read('demo/%s_config.ini' % self.cookie('demomode'))
 
       # If debugging is enabled, set up the cgitb eodule
       import cgitb; cgitb.enable()
@@ -119,7 +120,7 @@ class Webapp(CGI_Application):
       user = self.UsersModel.Browse({'username':self.cookie('username'), 'active':1})
       if user:
          self.CurrentUser = self.UsersModel.Read(user[0]['id'])
-      elif self.config.get('general', 'debug') == 'on':
+      elif self.config.get('general', 'debug') == 'on' or self.config.get('general', 'demomode') == 'on':
          self.CurrentUser = self.UsersModel.Read(1)
       else:
          self.CurrentUser = False
@@ -153,7 +154,8 @@ class Webapp(CGI_Application):
       validated = True
 
       # not debug check login
-      if self.config.get('general', 'debug') != 'on':
+      if self.config.get('general', 'debug') == 'off' and self.config.get('general', 'demomode') == 'off':
+
          # Let's see if their session matches their database session
          if self.cookie('username'):
             if self.cookie('session') != self.SessionModel.Get(self.cookie('username')):
