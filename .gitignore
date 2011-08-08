@@ -1,7 +1,7 @@
 *.pyc
 *.htmlc
 *.swp
+setup.py
 config.ini
 devconfig.ini
-setup.py
 demo/demo_config.ini
