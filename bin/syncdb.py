@@ -28,7 +28,7 @@ CREATE TABLE sessions (
    created datetime DEFAULT NULL,
    ip varchar(255) DEFAULT NULL)
 ''')
- 
+
 # Creating users table
 cursor.execute('DROP TABLE IF EXISTS users')
 cursor.execute('''
@@ -167,7 +167,7 @@ cursor.execute('''
 
 
 # Loading users table
-cursor.execute('INSERT INTO users (username, password) VALUES ("chris", SHA1("password"))')
+cursor.execute('INSERT INTO users (username, password) VALUES ("admin", SHA1("password"))')
 
 # Loading topnav table
 cursor.execute('INSERT INTO topnav (name) VALUES ("Home")')

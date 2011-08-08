@@ -53,6 +53,11 @@ $(document).ready(function(){
       <TMPL_IF validated>
       // admins can add new pages even if the nav isn't there
       $('#quickaddsidenav').removeClass('hideme');
+
+      // adjust the quickadd based on the header
+      var bump = $('#header').height();
+      var pos = $('#quickaddsidenav').position().top;
+      $('#quickaddsidenav').css('top', parseInt(bump)+parseInt(pos));
       </TMPL_IF>
    <TMPL_ELSE>
       // size the sidenav properly
@@ -169,8 +174,9 @@ float: right;
 <div id='container' class='container'>
 <!-- Header -->
 <div id='header' class='span-24'>
+<TMPL_VAR configheader ESCAPE="NONE">
 <TMPL_IF demosite>
-<h3>You are currently running in Demo mode.  There are a few differences between demo mode and normal mode.  First, everyone shares pages.  Everyone who is running in demo mode shares the same page names and content, so your changes can be overwritten at any time. Everyone also shares files.  Don't upload anything you don't want open to the public.</h3>
+<h3 style='text-align: center;'>You are currently running in Demo mode.  There are a few differences between demo mode and normal mode.  First, everyone shares pages.  Everyone who is running in demo mode shares the same page names and content, so your changes can be overwritten at any time. Everyone also shares files.  Don't upload anything you don't want open to the public.</h3>
 <i>Please feel free to <a href='?mode=Configuration'>change your configuration</a>.  That is the main purpose of Demo mode</i>
 </TMPL_IF>
 </div>

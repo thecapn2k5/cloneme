@@ -4,18 +4,6 @@
 <title>Set Up The Site</title>
 <script type="text/javascript" src="js/jquery-1.4.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
-<script type='text/javascript'>
-function ValidatePassword(){
-   var pass = $('#password').val();
-   $.getJSON('setup.py', {'cm':'ValidatePassword', 'password':pass}, function(data){
-      if(data['html']){
-         $('body').html(data['html']);
-      } else {
-         alert("Wrong Password, Fool!");
-      }
-   });
-};
-</script>
 
 <style type='text/css'>
 .hideme {
@@ -78,9 +66,11 @@ function Choose(){
 function SaveToggles(){
    var toggles = ''
    $('input[type=checkbox]').each(function(){
-      var name = $(this).attr('name');
-      var checked = $(this).attr('checked');
-      toggles = toggles + name +'='+ checked + '/'
+      if (!($(this).attr('id') == 'togglechurch')){
+         var name = $(this).attr('name');
+         var checked = $(this).attr('checked');
+         toggles = toggles + name +'='+ checked + '/'
+      }
    });
 
    $.getJSON('setup.py', {'cm':'ChooseToggles', 'db':$('#confirmeddb').val(), 'toggles':toggles}, function(data){
@@ -91,25 +81,43 @@ function SaveToggles(){
       }
    });
 };
+
+function ToggleChurch(){
+   if ($('#togglechurch').attr('checked') == true){
+      $('input[name=families]').attr('checked', 'checked');
+      $('input[name=attendance]').attr('checked', 'checked');
+      $('input[name=finance]').attr('checked', 'checked');
+   } else {
+      $('input[name=families]').removeAttr('checked');
+      $('input[name=attendance]').removeAttr('checked');
+      $('input[name=finance]').removeAttr('checked');
+   }
+}
+
 </script>
 
 <h3>Which Customization Options Do You Want?</h3>
-<input type='hidden' id='confirmeddb' value="<TMPL_VAR db>">
+
+<input type='checkbox' id='togglechurch' onChange="ToggleChurch()">
+Church Package
+
 <span class='hideme'>
+<input type='text' id='confirmeddb' value="<TMPL_VAR db>">
 <br><input type='checkbox' name='editnav' checked='checked'>
 Modify Main Navigation Pages
 <br><input type='checkbox' name='editsecondarynav' checked='checked'>
 Modify Secondary Navigation Pages
-</span>
-<br><input type='checkbox' name='layout'>
+<br><input type='checkbox' name='layout' checked='checked'>
 Modify Layout Template
-<br><input type='checkbox' name='secondarynav'>
+<br><input type='checkbox' name='secondarynav' checked='checked'>
 Modify Secondary Navigation Placement
-<br><input type='checkbox' name='color'>
+<br><input type='checkbox' name='color' checked='checked'>
 Modify Color Scheme
-<br><input type='checkbox' name='customcss'>
+<br><input type='checkbox' name='customcss' checked='checked'>
 Customized CSS
-<br><input type='checkbox' name='customtemplates'>
+<br><input type='checkbox' name='header' checked='checked'>
+Customized Header
+<br><input type='checkbox' name='customtemplates' checked='checked'>
 Custom Templates
 <br><input type='checkbox' name='families'>
 Family Database
@@ -118,6 +126,7 @@ Services &amp; Attendance Tracker
 <i>(only if also using "Family Database")</i>
 <br><input type='checkbox' name='finance'>
 Finance Tracker
+</span>
 
 
 <br><button type='button' onClick="SaveToggles()">Save</button>

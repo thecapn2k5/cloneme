@@ -28,6 +28,7 @@ class Webapp(Webapp):
       colorbool = self.config.getboolean('toggles', 'color')
       secondarybool = self.config.getboolean('toggles', 'secondarynav')
       customcssbool = self.config.getboolean('toggles', 'customcss')
+      headerbool = self.config.getboolean('toggles', 'header')
       customtemplatesbool = self.config.getboolean('toggles', 'customtemplates')
 
       # get your configs
@@ -51,6 +52,21 @@ class Webapp(Webapp):
          else:
             css = ' '
          varHash['customcss'] = css
+
+      # get the custom header
+      if headerbool:
+         # saved a custom header
+         if 'header' in self.config.options('options'):
+
+            header = self.config.get('options', 'header')
+            if len(header) == 0:
+               header = ' '
+            else:
+               header = re.sub('<br>', '\r\n', header)
+         # no custom header
+         else:
+            header = ' '
+         varHash['header'] = header
 
       # get all your sheets
       sheets = os.listdir('css')
@@ -134,16 +150,25 @@ class Webapp(Webapp):
 
       # catch keys
       newconfig.add_section('options')
+
+      for key in ['customcss', 'header']:
+         if not key in self.form.keys():
+            newconfig.set('options', key, '')
+
       for key in self.form.keys():
          if not key in exceptions:
             value = self.form.getvalue(key)
-            if key == 'customcss':
+            if key == 'customcss' or key == 'header':
                value = re.sub('\r\n', '<br>', value)
             newconfig.set('options', key, value)
 
       # write the file
-      with open('config.ini', 'wb') as configfile:
-         newconfig.write(configfile)
+      if 'config.ini' in os.listdir('.'):
+         with open('config.ini', 'wb') as configfile:
+            newconfig.write(configfile)
+      elif 'devconfig.ini' in os.listdir('.'):
+         with open('devconfig.ini', 'wb') as configfile:
+            newconfig.write(configfile)
 
       # send to config page
       return self.redirect('?mode=Configuration')

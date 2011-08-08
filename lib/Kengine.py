@@ -88,8 +88,7 @@ class Webapp(CGI_Application):
 
       else:
          print 'content-type: text/html \n'
-         print 'You haven\'t set up the database yet.'
-         return
+         print 'You haven\'t set up the database yet. <hr>'
 
       if self.cookie('demomode') and self.config.get('general', 'demomode') == 'on':
          self.config.read('demo/%s_config.ini' % self.cookie('demomode'))
@@ -316,6 +315,15 @@ class Webapp(CGI_Application):
          data['configunified'] = 1
       else:
          data['configdivided'] = 1
+
+
+      if 'configheader' in data:
+         if data['configheader'] == 1:
+            data['configheader'] = ''
+         else:
+            data['configheader'] = re.sub('<br>', '\r\n', data['configheader'])
+      if not self.config.getboolean('toggles', 'header'):
+         data['configheader'] = ''
 
       if 'configcustomcss' in data:
          if data['configcustomcss'] == 1:
