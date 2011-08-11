@@ -49,7 +49,6 @@ $(document).ready(function(){
    // see whether you should show or hide the sidenav
    <TMPL_IF hidesidenav>
       $('#content').css('width', $('#nav').css('width'));
-      $('#sidenavdiv').addClass('hideme');
       <TMPL_IF validated>
       // admins can add new pages even if the nav isn't there
       $('#quickaddsidenav').removeClass('hideme');
@@ -213,7 +212,7 @@ float: right;
 </TMPL_IF>
 
 <div id='maincontent' class='span-24'>
-<div id='sidenavdiv' class='rounded'>
+<div id='sidenavdiv' class='rounded <TMPL_IF hidesidenav>hideme</TMPL_IF>'>
 
 <ul id='sidenav'>
    <TMPL_LOOP Sidenav>
@@ -258,5 +257,5 @@ float: right;
 
 </div> <!-- /sidenav div -->
 
-<div id='content' class='span-19 rounded'>
+<div id='content' class='span-19 rounded <TMPL_IF hidesidenav>span-24</TMPL_IF>'>
 <div id='textwrap'>
