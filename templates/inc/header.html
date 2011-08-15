@@ -170,6 +170,23 @@ float: right;
 </head>
 <body>
 
+<div id='clonemeprompt' class='hideme'>
+   <span id='clonetext'></span>
+   <input type='hidden' id='saveid'>
+   <input type='hidden' id='savecm'>
+   <input type='text' id='cloneinput'><br>
+   <button style='float: right;' type='button' onClick="SubmitPrompt()">Ok</button>
+   </form>
+</div>
+
+<div id='clonemeconfirm' class='hideme'>
+   <span id='clonetext'></span>
+   <input type='hidden' id='saveid'>
+   <input type='hidden' id='savecm'>
+   <button style='float: right; padding: 5px; margin: 5px;' type='button' id='ok' onClick="SubmitConfirm()">Ok</button>
+   <button style='float: right; padding: 5px; margin: 5px;' type='button' onClick="$(this).parent().remove()">Cancel</button>
+</div>
+
 <div id='container' class='container'>
 <!-- Header -->
 <div id='header' class='span-24'>
@@ -184,19 +201,20 @@ float: right;
 <div id='nav' class='span-24 rounded'>
    <ul id='navul'>
       <TMPL_LOOP Topnav>
-      <li>
+      <li id="topnav<TMPL_VAR id>">
          <a class="<TMPL_VAR currentparent>" href='?cm=Top&id=<TMPL_VAR id>'><TMPL_VAR name></a>
          <TMPL_IF validated GLOBAL="1">
          <TMPL_IF booleditnav GLOBAL="1">
-         <img class='icon' src='images/icons/page_white_edit.png' onClick='EditTopNav("<TMPL_VAR id>", "<TMPL_VAR name>")'>
-         <img class='icon' src='images/icons/page_white_delete.png' onClick='DeleteTopNav("<TMPL_VAR id>")'>
+         <img class='icon' src='images/icons/page_white_edit.png' onClick='ClonePrompt("Put in the new name for <TMPL_VAR name>", "topnav<TMPL_VAR id>", "EditTopNav")'>
+         <!--<img class='icon' src='images/icons/page_white_delete.png' onClick='DeleteTopNav("<TMPL_VAR id>")'>-->
+         <img class='icon' src='images/icons/page_white_delete.png' onClick="CloneConfirm('Are you sure you want to delete this category and all pages associated with it?', 'topnav<TMPL_VAR id>', 'DeleteTopNav')">
          </TMPL_IF>
          </TMPL_IF>
       </li>
       </TMPL_LOOP>
       <TMPL_IF validated>
       <TMPL_IF booleditnav GLOBAL="1">
-      <li><img src="images/icons/add.png" class="icon" onClick="AddTopNav()"><a onClick="AddTopNav()">Add</a></li>
+      <li><img src="images/icons/add.png" class="icon" onClick="AddTopNav()"><a onClick='ClonePrompt("Please put in the name for the new category.", "category", "AddTopNav")'>Add</a></li>
       </TMPL_IF>
       <li><a class="<TMPL_VAR admincurrent>" href='?mode=Users&cm=Browse'>Admin</a></li>
       </TMPL_IF>
@@ -205,7 +223,7 @@ float: right;
 
 <TMPL_IF validated>
 <TMPL_IF booleditsecondarynav GLOBAL="1">
-<div id='quickaddsidenav' class='hideme' onClick="AddSideNav()">
+<div id='quickaddsidenav' class='hideme' onClick='ClonePrompt("Please put in the name for the new page.", "page", "AddSideNav")'>
 <img src='images/icons/page_white_add.png' class='icon'> <b>Add A New Page</b>
 </div>
 </TMPL_IF>
@@ -216,12 +234,12 @@ float: right;
 
 <ul id='sidenav'>
    <TMPL_LOOP Sidenav>
-   <li>
+   <li id='sidenav<TMPL_VAR id>'>
       <a href="?id=<TMPL_VAR id>" class="<TMPL_VAR currentpage>"><TMPL_VAR name></a>
       <TMPL_IF validated GLOBAL="1">
       <TMPL_IF booleditsecondarynav GLOBAL="1">
-      <img class='floatr icon' src='images/icons/page_white_delete.png' onClick='DeleteSideNav("<TMPL_VAR id>")'>
-      <img class='floatr icon' src='images/icons/page_white_edit.png' onClick='EditSideNav("<TMPL_VAR id>", "<TMPL_VAR name>")'>
+      <img class='floatr icon' src='images/icons/page_white_delete.png' onClick="CloneConfirm('Are you sure you want to permanently delete this page?', 'sidenav<TMPL_VAR id>', 'DeleteSideNav')">
+      <img class='floatr icon' src='images/icons/page_white_edit.png' onClick='ClonePrompt("Put in the new name for <TMPL_VAR name>", "sidenav<TMPL_VAR id>", "EditSideNav")'>
       </TMPL_IF>
       </TMPL_IF>
    </li>
@@ -243,11 +261,9 @@ float: right;
       <li><a class="<TMPL_VAR currentpagefinance>" href='?mode=Finance'>Finance</a></li>
       </TMPL_IF>
 
-
-
    </TMPL_IF>
    <TMPL_IF booleditsecondarynav GLOBAL="1">
-   <li onClick="AddSideNav()">
+   <li onClick='ClonePrompt("Please put in the name for the new page.", "page", "AddSideNav")'>
       <img src='images/icons/page_white_add.png' class='icon'>
       <a>Add A New Page</a>
    </li>
