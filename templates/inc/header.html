@@ -36,7 +36,7 @@ function resizeSideNav(){
    $('#content').removeClass('span-19');
    $('#content').addClass('span-24');
    <TMPL_ELSE>
-   $('#sidenav').css('height', getInt($('#content').css('height'))-20);
+   $('#sidenav').css('height', parseInt($('#content').height())-20);
    </TMPL_IF>
 }
 
