@@ -1,6 +1,20 @@
 <script type='text/javascript'>
-function NewAccount(){
-   var name = prompt('New account name?');
+function NewAccount2(text, id, cm){
+   $("#clonemenewaccount").clone().dialog({
+      open: function(e, ui){
+         $(this).attr('id', 'clonenewaccount');
+         $('#clonenewaccount #cloneinput').focus();
+         $('#clonenewaccount').removeClass('hideme');
+      },
+      close: function(e, ui){
+         $(this).remove();
+      }
+   });
+}
+
+function SubmitAccount(){
+   var name = $('#clonenewaccount #cloneinput').val();
+   $('#clonenewaccount').remove();
    if (name){
       // update the database
       $.getJSON('ajax.py', {'mode':'Finance', 'cm':'JsonAddAccount', 'name':name}, function(data){
@@ -106,6 +120,13 @@ label {
 }
 </style>
 
+<div id='clonemenewaccount' class='hideme'>
+   Please put in the name of the new account.<br>
+   <input type='text' id='cloneinput'><br>
+   <button style='float: right;' type='button' onClick="SubmitAccount()">Ok</button>
+   </form>
+</div>
+
 <div id='addtransaction'>
    <form action='?' method='post'>
       <input type='hidden' name='mode' value='Finance'>
@@ -124,7 +145,7 @@ label {
       <input type='text' name="description">
       </p>
 
-      <p><button type='button' onClick="NewAccount()">New Account</button></p>
+      <p><button type='button' onClick="NewAccount2()">New Account</button></p>
 
       <TMPL_IF boolfamilies>
       <button type='button' class='floatr' onClick="NewRow()">New Row</button>
