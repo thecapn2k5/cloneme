@@ -36,6 +36,12 @@ $(document).ready(function(){
       CalculateRemainder();
    });
 
+   $('.datepicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+      changeMonth: true,
+      changeYear: true
+   });
+
 });
 
 function NewRow(){
@@ -143,6 +149,42 @@ label {
       <p>
       <label>Description</label>
       <input type='text' name="description">
+      </p>
+
+      <p>
+      <label>Date And Time</label>
+      <input type='text' name='date' class='datepicker'>
+
+      <select name='hour'>
+         <option value='01'>01</option>
+         <option value='02'>02</option>
+         <option value='03'>03</option>
+         <option value='04'>04</option>
+         <option value='05'>05</option>
+         <option value='06'>06</option>
+         <option value='07'>07</option>
+         <option value='08'>08</option>
+         <option value='09'>09</option>
+         <option value='10'>10</option>
+         <option value='11'>11</option>
+         <option value='12'>12</option>
+      </select>
+
+      <select name='minute'>
+         <option value='00'>00</option>
+         <option value='15'>15</option>
+         <option value='30'>30</option>
+         <option value='45'>45</option>
+      </select>
+
+      <select name='ampm'>
+         <option value='am'>am</option>
+         <option value='pm'>pm</option>
+      </select>
+
+      <br>
+
+      <i>(leave date blank to use current time)</i>
       </p>
 
       <p><button type='button' onClick="NewAccount2()">New Account</button></p>

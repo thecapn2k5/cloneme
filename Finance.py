@@ -86,6 +86,10 @@ class Webapp(Webapp):
       if self.form.getvalue('description'):
          varHash['description'] = self.form.getvalue('description')
 
+      if self.form.getvalue('date'):
+         date = '%s %s:%s%s' % (self.form.getvalue('date'), self.form.getvalue('hour'), self.form.getvalue('minute'), self.form.getvalue('ampm'))
+         varHash['timestamp'] = datetime.datetime.strptime(date, '%Y-%m-%d %I:%M%p')
+
       # catch your transactionid
       transactionid = self.TransactionsModel.Add(varHash)
 
