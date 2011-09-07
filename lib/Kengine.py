@@ -133,6 +133,7 @@ class Webapp(CGI_Application):
       self.MembersModel = DBreadModel('members', self.cursor)
       self.PhonesModel = DBreadModel('phones', self.cursor)
       self.PagesModel = DBreadModel('pages', self.cursor)
+      self.RedirectsModel = DBreadModel('redirects', self.cursor)
       self.ServicesModel = DBreadModel('services', self.cursor)
       self.TopnavModel = DBreadModel('topnav', self.cursor)
       self.TransactionsModel = DBreadModel('transactions', self.cursor)

@@ -26,6 +26,12 @@ class Webapp(Webapp):
       # local vars
       if not id:
          id = self.form.getvalue('id')
+
+      # do the redirect if they clicked a redirect link
+      redirect = self.RedirectsModel.Browse({'pageid':id})
+      if redirect:
+         return self.redirect('?mode=%s&cm=%s' % (redirect[0]['mode'], redirect[0]['cm']))
+
       varHash = self.PagesModel.Read(id)
 
       # you just deleted the page you're on
