@@ -165,6 +165,16 @@ cursor.execute('''
       timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 ''')
 
+# Creating redirects table
+cursor.execute('DROP TABLE IF EXISTS redirects')
+cursor.execute('''
+   CREATE TABLE redirects (
+      id INT NOT NULL AUTO_INCREMENT,
+      PRIMARY KEY(id),
+      pageid INT,
+      mode VARCHAR(255),
+      cm VARCHAR(255))
+''')
 
 # Loading users table
 cursor.execute('INSERT INTO users (username, password) VALUES ("admin", SHA1("password"))')
